@@ -7,7 +7,7 @@ ifeq ($(MACHINE),Darwin)
     LDFLAG=$(COMPILEFLAG) -L"/System/Library/Frameworks/OpenGL.framework/Libraries" -L"/System/Library/Frameworks/GLUT.framework" -framework GLUT -framework OpenGL -lGL -lGLU -L/usr/X11R6/lib
 else
     LIBS = -L/usr/lib/ -lglut -lgle
-    COMPILEFLAG=
+    COMPILEFLAG=-fPIC
     LDFLAG=
 endif
 
@@ -110,7 +110,7 @@ text3d.o: text3d.cpp text3d.h
 
 Socket.o : $(SOCKETS_DIR)/Socket.cpp $(SOCKETS_DIR)/Socket.h
 	$(CC) $(INCLUDES) $(DEBUG) -c $(SOCKETS_DIR)/Socket.cpp
-	
+
 UDPSocket.o : $(SOCKETS_DIR)/UDPSocket.cpp $(SOCKETS_DIR)/UDPSocket.h
 	$(CC) $(INCLUDES) $(DEBUG) -c $(SOCKETS_DIR)/UDPSocket.cpp
 
