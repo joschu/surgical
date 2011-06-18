@@ -11,7 +11,7 @@ else
     LIBS = -L/usr/local/lib/ -lcxcore -lcv -lhighgui -lcvaux -lml -lm  -L/usr/lib/ -lglut -lgle -llshkit -lgsl -lgslcblas -lboost_program_options-mt 
     COMPILEFLAG=
     LDFLAG=
-    INCLUDES = -I/usr/local/include/ -I $(UTILS_DIR) -I/usr/local/include/eigen2/ -I/usr/include/boost/  -I/usr/local/include/lshkit/ -I/usr/local/include/opencv/  
+    INCLUDES = -I/usr/local/include/ -I $(UTILS_DIR) -I/usr/local/include/eigen2/ -I/usr/include/boost/  -I/usr/local/include/lshkit/ -I/usr/local/include/opencv/  -I/usr/include/eigen2
 endif
 THREAD_DIR = ../DiscreteRods/
 VISION_DIR = ../vision/
@@ -73,7 +73,7 @@ utility.o : $(UTILS_DIR)/utility.cpp
 
 clock.o : $(UTILS_DIR)/clock.cpp
 	$(CC) $(INCLUDES) $(DEBUG) -c $(UTILS_DIR)/clock.cpp
-	
+
 UDPSocket.o: $(SOCKET_DIR)UDPSocket.cpp 
 	$(CC) $(INCLUDES) $(DEBUG) -c $(SOCKET_DIR)UDPSocket.cpp
 

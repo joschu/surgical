@@ -1023,7 +1023,7 @@ int main (int argc, char * argv[])
 
   //srand(time(NULL));
   //srand((unsigned int)time((time_t *)NULL));
-  
+
   printf("Instructions:\n"
       "Hold down the left mouse button to rotate image: \n"
       "\n"
