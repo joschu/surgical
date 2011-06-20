@@ -28,8 +28,8 @@ void writeMatrix(MatrixXd& x, int i) {
   out.close();
 }
 
-MatrixXd m;
-MatrixXd& readMatrix(int i) {
+MatrixXd readMatrix(int i) {
+  MatrixXd m;
   std::ifstream in;
   string line;
   int R;
@@ -63,10 +63,18 @@ MatrixXd threeToX(Matrix3d& x) {
   return m1;
 }
 
+Vector3d XTo3(MatrixXd& x) {
+  Vector3d v;
+  //std::cout << x.rows() << " " << x.cols() << std::endl;
+  for (int c=0; c<3; c++) {
+    v(c) = x(0,c);
+  }
+}
+
 void dumpThread(Thread* thread) {
   
   // vertices  
-  
+  MatrixXd m;  
   std::cout << "dumping verts" << std::endl; 
   int R = 3;
   int C = thread->_thread_pieces.size();
@@ -86,10 +94,59 @@ void dumpThread(Thread* thread) {
   MatrixXd start_rotX = threeToX(start_rot);
   writeMatrix(start_rotX,1);
 
-  Matrix3d end_rot = thread->start_rot();
-  MatrixXd end_rotX = threeToX(start_rot);
+  Matrix3d end_rot = thread->end_rot();
+  MatrixXd end_rotX = threeToX(end_rot);
   writeMatrix(end_rotX,2);
 
 }
 
+void loadConstraints(Thread* thread) {
+    Vector3d start_pos = readMatrix(0).transpose();
+std::cout << "start:" << start_pos(0) << " " << start_pos(1) << " " << start_pos(2) << std::endl;
+    Matrix3d start_rot = readMatrix(1);
+    Vector3d end_pos = readMatrix(2).transpose();
+    std::cout << "end:" << end_pos(0) << " " << end_pos(1) << " " << end_pos(2) << std::endl;
+    Matrix3d end_rot = readMatrix(3);
+    thread->set_constraints(start_pos,start_rot,end_pos,end_rot);
+}
 
+
+//MatrixXd makePerts(Thread* thread, double eps)
+//{
+  //int n_seg = thread->num_pieces();
+  //int n_ctl = 12;
+  
+  //MatrixXd A = MatrixXd(n_seg,n_ctl);
+  //MatrixXd B = MatrixXd(n_seg,n_ctl);
+  
+  //vector<ThreadPiece*> thread_backup_pieces;
+  //thread->save_thread_pieces_and_resize(thread_backup_pieces);
+
+  //VectorXd du(n_ctl);
+  
+  //for(int i_ctl = 0; i_ctl < n_ctl; i_ctl++)
+  //{
+    //du.setZero();   
+    
+    //du(i_ctl) = eps;        
+    ////applyControl(thread, du);
+    //for (int i_seg=0; i_seg < n_seg; i_seg++)
+    //{
+      //A.block(i_seg*3, i_ctl, 3,1) = thread->vertex_at_ind(i_seg);
+    //}
+    //thread->restore_thread_pieces(thread_backup_pieces);
+
+    //du(i_ctl) = -eps;
+    ////applyControl(thread, du);
+    //for (int i_seg=0; i_seg < n_seg; i_seg++)
+    //{
+      //B.block(3*n_seg, i_ctl, 3,1) = thread->vertex_at_ind(i_seg);
+    //}
+    //thread->restore_thread_pieces(thread_backup_pieces);
+
+  //}
+//}
+
+//void applyControl(Thread* thread, VectorXd du) {
+  //u = 
+//}

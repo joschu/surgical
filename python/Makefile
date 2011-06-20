@@ -32,7 +32,7 @@ FAKEIMS= -DFAKEIMS
 target : doo.so
 
 doo.so: doo.pyx communication.o
-	rm doo.so
+	rm -f doo.so
 	python setup.py build_ext --inplace
 
 communication.o: communication.cpp
