@@ -1,6 +1,6 @@
-from doo import Thread,GLThread
+from doo import Thread
 from comm import readMats,writeMats
-import enthought.mayavi.mlab as mlab
+import mayavi.mlab as mlab
 from time import sleep,time
 import numpy as np
 #t = Thread()
@@ -8,8 +8,8 @@ import numpy as np
 #t.dump()
 mlab.clf()
 
-glt = GLThread()
-glt = GLThread()
+
+glt = Thread()
 
 t_start = time()
 A,B=glt.makePerts()
@@ -21,7 +21,7 @@ print "makeperts time",time()-t_start
 glt.minimizeEnergy()
 xyz,start_rot,end_rot = glt.getData()
 
-glt.printThreadData()
+glt.printVertices()
 cons = glt.getConstraints()
 glt.setConstraints(cons + np.random.randn(12)*.1)
 

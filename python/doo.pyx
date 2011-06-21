@@ -20,26 +20,65 @@ cdef extern from "glThread.h":
     cdef cppclass c_GLThread "GLThread":
         GLThread()
         void printThreadData()
-        #void minimize_energy(int)
         void updateThreadPoints()
         c_Thread* getThread()
+        c_Thread* _thread
 
 cdef extern from "communication.h":
     void dumpThread(c_Thread*)
     void loadConstraints(c_Thread*)
-    
-from time import time
         
 cdef class Thread:
     cdef c_Thread *thisptr
     def __cinit__(self):
-        cdef c_Thread* thisptr = new c_Thread()
-        self.thisptr = thisptr
+        cdef c_GLThread* glt = new c_GLThread()
+        self.thisptr = glt.getThread()
     def printVertices(self):
         self.thisptr.print_vertices()
     def dump(self):
         dumpThread(self.thisptr)
-        
+    def minimizeEnergy(self):
+        self.thisptr.minimize_energy(1000)
+    def dump(self):
+        dumpThread(self.thisptr)
+    def setConstraints(self,c):
+        start,start_ang,end,end_ang = c[0:3],c[3:6],c[6:9],c[9:12]
+        writeMats(start,euler2mat(*start_ang),end,euler2mat(*end_ang))
+        self.loadConstraints()        
+        self.minimizeEnergy()
+    def loadConstraints(self):
+        loadConstraints(self.thisptr)
+    def getXYZ(self):
+        dumpThread(self.thisptr)
+        return readMats(1)[0]
+    def getData(self):
+        dumpThread(self.thisptr)
+        return readMats(3)
+    def getConstraints(self):
+        xyz,start_rot,end_rot = self.getData()
+        start,end = xyz[:,0],xyz[:,-1]
+        return np.r_[start,mat2euler(start_rot),end,mat2euler(end_rot)]
+    def makePerts(self,eps=1e-2):
+        n_ctl = 12
+        n_seg = self.thisptr.num_pieces()
+        cdef vector[ThreadPiece*] thread_backup_pieces 
+        self.thisptr.save_thread_pieces_and_resize(thread_backup_pieces)
+        u = self.getConstraints()
+        A = np.zeros((n_ctl,3*n_seg))
+        B = np.zeros((n_ctl,3*n_seg))
+                
+        for i_pert in xrange(12):
+            du = np.zeros(12)                        
+            du[i_pert] = eps
+            
+            self.setConstraints(u + du)
+            A[i_pert] = self.getXYZ().flatten()
+            self.thisptr.restore_thread_pieces(thread_backup_pieces)
+            
+            self.setConstraints(u - du)
+            B[i_pert] = self.getXYZ().flatten()
+            self.thisptr.restore_thread_pieces(thread_backup_pieces)
+        return A,B        
         
 cdef class GLThread:
     cdef c_GLThread *thisptr

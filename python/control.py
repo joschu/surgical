@@ -1,6 +1,6 @@
 from __future__ import division
 from dooview import MlabGui
-from doo import GLThread
+from doo import Thread
 import numpy as np
 from time import sleep,time
 from utils import cprint
@@ -39,8 +39,8 @@ def rescale(u,d):
     return d * u / (constraint_norm(u)+1e-3)
 
 if __name__ == "__main__":
-    start_thread = GLThread()
-    goal_thread = GLThread()
+    start_thread = Thread()
+    goal_thread = Thread()
 
     cons = start_thread.getConstraints()
     cons[0] += 10 # start x
