@@ -28,7 +28,7 @@ cdef extern from "communication.h":
     void dumpThread(c_Thread*)
     void loadConstraints(c_Thread*)
     
-
+from time import time
         
 cdef class Thread:
     cdef c_Thread *thisptr
@@ -48,6 +48,7 @@ cdef class GLThread:
         self.thisptr = new c_GLThread()
         cdef c_Thread* threadptr = self.thisptr.getThread()
         self.threadptr = threadptr
+        self.minimizeEnergy()
     def __dealloc(self):
         del self.thisptr
     def minimizeEnergy(self):
@@ -61,9 +62,8 @@ cdef class GLThread:
     def setConstraints(self,c):
         start,start_ang,end,end_ang = c[0:3],c[3:6],c[6:9],c[9:12]
         writeMats(start,euler2mat(*start_ang),end,euler2mat(*end_ang))
-        print "start,end",start,end
-        self.loadConstraints()
-        #self.minimizeEnergy()
+        self.loadConstraints()        
+        self.minimizeEnergy()
     def loadConstraints(self):
         loadConstraints(self.threadptr)
     def getXYZ(self):
@@ -82,18 +82,18 @@ cdef class GLThread:
         cdef vector[ThreadPiece*] thread_backup_pieces 
         self.threadptr.save_thread_pieces_and_resize(thread_backup_pieces)
         u = self.getConstraints()
-        A = np.zeros((3*n_seg,n_ctl))
-        B = np.zeros((3*n_seg,n_ctl))
+        A = np.zeros((n_ctl,3*n_seg))
+        B = np.zeros((n_ctl,3*n_seg))
                 
         for i_pert in xrange(12):
             du = np.zeros(12)                        
             du[i_pert] = eps
             
             self.setConstraints(u + du)
-            A[:,i_pert] = self.getXYZ().flatten()
+            A[i_pert] = self.getXYZ().flatten()
             self.threadptr.restore_thread_pieces(thread_backup_pieces)
             
             self.setConstraints(u - du)
-            B[:,i_pert] = self.getXYZ().flatten()
+            B[i_pert] = self.getXYZ().flatten()
             self.threadptr.restore_thread_pieces(thread_backup_pieces)
         return A,B

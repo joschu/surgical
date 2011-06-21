@@ -40,17 +40,17 @@ MatrixXd readMatrix(int i) {
   in >> C;
   m.resize(R,C);
   float value;
-  std::cout << "reading matrix " << R << "x" << C << std::endl;
+  //std::cout << "reading matrix " << R << "x" << C << std::endl;
   for (int r=0; r<R; r++) {
     for (int c=0; c<C; c++) {
       in >> value;
-      std::cout << value << " ";
+      //std::cout << value << " ";
       m(r,c) = value;
     }
-    std::cout << std::endl;
+    //std::cout << std::endl;
   }
   in.close();
-  std::cout << "done reading" << std::endl;
+  //std::cout << "done reading" << std::endl;
   return m;
 }
 
@@ -75,7 +75,7 @@ void dumpThread(Thread* thread) {
   
   // vertices  
   MatrixXd m;  
-  std::cout << "dumping verts" << std::endl; 
+  //std::cout << "dumping verts" << std::endl; 
   int R = 3;
   int C = thread->_thread_pieces.size();
   Vector3d v;
@@ -88,7 +88,7 @@ void dumpThread(Thread* thread) {
   }
   writeMatrix(m,0);
   
-  std::cout << "dumping start rot" << std::endl;   
+  //std::cout << "dumping start rot" << std::endl;   
   // start rot
   Matrix3d start_rot = thread->start_rot();
   MatrixXd start_rotX = threeToX(start_rot);
@@ -102,10 +102,10 @@ void dumpThread(Thread* thread) {
 
 void loadConstraints(Thread* thread) {
     Vector3d start_pos = readMatrix(0).transpose();
-std::cout << "start:" << start_pos(0) << " " << start_pos(1) << " " << start_pos(2) << std::endl;
+    //std::cout << "start:" << start_pos(0) << " " << start_pos(1) << " " << start_pos(2) << std::endl;
     Matrix3d start_rot = readMatrix(1);
     Vector3d end_pos = readMatrix(2).transpose();
-    std::cout << "end:" << end_pos(0) << " " << end_pos(1) << " " << end_pos(2) << std::endl;
+    //std::cout << "end:" << end_pos(0) << " " << end_pos(1) << " " << end_pos(2) << std::endl;
     Matrix3d end_rot = readMatrix(3);
     thread->set_constraints(start_pos,start_rot,end_pos,end_rot);
 }
