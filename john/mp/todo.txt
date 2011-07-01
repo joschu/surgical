@@ -1,0 +1,4 @@
+unify constants, especially n_iter, USCALE
+traj gets infeasible with negative step
+spawn matlab
+

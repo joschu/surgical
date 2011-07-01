@@ -18,3 +18,13 @@ MotionPlanning/ims_for_vids/*
 *.wpr
 python/doo.cpp
 *.pyc
+*.npy
+DiscreteRods/testThreadDiscrete
+DiscreteRods/testThreadDiscrete_phantom
+MotionPlanning/run_planner_libs
+MotionPlanning/run_planner_libs_dim1
+MotionPlanning/run_planner_libs_dim2
+MotionPlanning/test_linearization
+MotionPlanning/test_planner
+MotionPlanning/vis_onetraj
+MotionPlanning/visualize_trajs
