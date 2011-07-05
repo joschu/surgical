@@ -1,6 +1,6 @@
-import settings
-from dooview import MlabGui
-from control import *
+import doo
+from doo.dooview import MlabGui
+from linearization import *
 from numpy.random import randn
 from utils import upsample2D
 

@@ -1,5 +1,7 @@
 import numpy as np
+from numpy.linalg import norm
 from scipy.interpolate import splrep,splev
+from itertools import cycle
 
 color_seqs = dict(
     purple = '\033[95m',
@@ -32,3 +34,14 @@ def ndinterp(x,xp,yp):
     shape = (-1,) + (1,)*(yp.ndim-1)
     return (1-fracpart).reshape(*shape)*yp[intpart]+ fracpart.reshape(*shape)*yp[intpart+1]
 
+def colorSeq(N):
+    colors =  ndinterp(np.linspace(0,1,N),np.linspace(0,1,7),
+                       np.array([[0,0,1],[0,1,0],[0,1,1],
+                                 [1,0,0],[1,0,1],[1,1,0],[1,1,1]]))
+    for col in cycle(colors): yield tuple(col)
+
+def trunc(x,p):
+    x1 = x.copy()
+    toobig = abs(x1) > p
+    x1[toobig] = (p*np.sign(x1))[toobig]
+    return x1

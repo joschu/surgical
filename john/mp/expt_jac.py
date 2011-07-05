@@ -1,7 +1,7 @@
 from pylab import *
-from doo import Thread
+from doo.doo import Thread
 from control import jacobian,calcFeats2d
-from settings import *
+from doo import *
 import numpy as np
 from utils import upsample2D
 

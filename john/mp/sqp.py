@@ -1,8 +1,8 @@
-from settings import *
-from control import calcFeats,jacobian
+from doo import *
+from linearization import calcFeats,jacobian
 from utils import ndinterp,cprint
 from Wormhole import Wormhole
-from dooview import fb
+from doo.dooview import fb
 
 matlab = None
 

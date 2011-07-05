@@ -1,4 +1,4 @@
-from doo import Thread
+from doo.doo import Thread
 from comm import readMats,writeMats
 from time import sleep,time
 import numpy as np

@@ -2,8 +2,8 @@ import scipy.optimize as opt
 from pylab import *
 from time import time
 
-from settings import *
-from doo import Thread
+from doo import *
+from doo.doo import Thread
 from sqp import frPath,calcStates,evalDiff
 from numpy.random import randn
 from utils import upsample2D

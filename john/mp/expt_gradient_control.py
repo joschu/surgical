@@ -1,6 +1,6 @@
-import settings
-from dooview import MlabGui
-from control import *
+import doo
+from doo.dooview import MlabGui
+from linearization import *
 
 start_thread = Thread()
 goal_thread = Thread()
