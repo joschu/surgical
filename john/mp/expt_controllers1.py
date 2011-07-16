@@ -15,8 +15,8 @@ scalar =5
 T = 30
 n_waypoints = 3
 
-np.random.seed(23)
-#np.random.seed(24)
+#np.random.seed(23)
+np.random.seed(24)
 #np.random.seed(28)
 
 thread = Thread()
@@ -46,10 +46,10 @@ for cons  in C.match_cons(thread,thread_targ.getConstraints()):
     x,y,z = thread.getXYZ()
     mlab.plot3d(x,y,z,tube_radius=.05,color=colors.next())    
 
-for cons  in C.cl_rotate(thread,thread_targ):
-    thread.setConstraints(cons)
-    x,y,z = thread.getXYZ()
-    mlab.plot3d(x,y,z,tube_radius=.05,color=colors.next())    
+#for cons  in C.cl_rotate(thread,thread_targ.getXYZ()):
+    #thread.setConstraints(cons)
+    #x,y,z = thread.getXYZ()
+    #mlab.plot3d(x,y,z,tube_radius=.05,color=colors.next())    
 
 #for cons  in C.match_cons(thread,thread_targ.getConstraints()):
     #thread.setConstraints(cons)

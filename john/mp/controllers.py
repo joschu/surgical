@@ -29,10 +29,10 @@ def jumprope(thread,theta,dtheta):
         cons[9:12] = apply_rot_eul(cons[9:12],dtheta,ax_rot)
         yield cons
         
-def cl_rotate(thread,thread_target):
+def cl_rotate(thread,xyz_targ):
 
 
-    xyz_targ = thread_target.getXYZ()
+    #xyz_targ = thread_target.getXYZ()
         
     thread1 = thread.clone()
     dists1 = []
@@ -63,7 +63,20 @@ def cl_rotate(thread,thread_target):
         #yield cons
     
     
+def twist_first(thread,theta,dtheta):        
+    while True:
+        xyz = thread.getXYZ()
+        ax_rot = xyz[:,1] - xyz[:,0]
+        cons = thread.getConstraints()
+        for _ in xrange(int(ceil(abs(theta/dtheta)))):
+            cons[3:6] = apply_rot_eul(cons[3:6],dtheta,ax_rot)
+            yield cons
         
+
+#def estimate_twist(thread):
+    #xyz = thread.getXYZ()
+    #o
+            
 def bend_first(thread,theta,dtheta):
     """if angle between ends and line joining them is less than theta
     bend the ends outwards"""
