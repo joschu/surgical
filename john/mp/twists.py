@@ -47,10 +47,10 @@ def twist_ctrl(thread,angle1,angle2):
 
     #print thread.getXYZ()[0]
     
-def apply_rot_vec(x,ang,ax,origin):
+def applyRotVec(x,ang,ax,origin):
     return dot(angle_axis2mat(ang,ax),x-origin[:,None])+origin[:,None]
     
-def apply_rot_eul(eul,ang,ax):
+def applyRotEul(eul,ang,ax):
     return mat2euler(dot(angle_axis2mat(-ang,ax),euler2mat(*eul)))
     
 def jumprope(thread,ang_rot,ang_conj=.5,n_rot=10,n_conj=3):
@@ -71,21 +71,21 @@ def jumprope(thread,ang_rot,ang_conj=.5,n_rot=10,n_conj=3):
     eul2 = cons[9:12]
     
     for t in xrange(n_conj):
-        cons[3:6] = apply_rot_eul(cons[3:6],ang_conj/n_conj,ax_normal1)
-        cons[9:12] = apply_rot_eul(cons[9:12],ang_conj/n_conj,ax_normal2)
+        cons[3:6] = applyRotEul(cons[3:6],ang_conj/n_conj,ax_normal1)
+        cons[9:12] = applyRotEul(cons[9:12],ang_conj/n_conj,ax_normal2)
         yield cons
         
     for t in xrange(n_rot):
-        cons[3:6] = apply_rot_eul(cons[3:6],ang_rot/n_rot,ax_tan1)
-        cons[9:12] = apply_rot_eul(cons[9:12],-ang_rot/n_rot,ax_tan2)
+        cons[3:6] = applyRotEul(cons[3:6],ang_rot/n_rot,ax_tan1)
+        cons[9:12] = applyRotEul(cons[9:12],-ang_rot/n_rot,ax_tan2)
         yield cons
         
     for t in xrange(n_conj):
-        cons[3:6] = apply_rot_eul(cons[3:6],-ang_conj/n_conj,ax_normal1)
-        cons[9:12] = apply_rot_eul(cons[9:12],-ang_conj/n_conj,ax_normal2)
+        cons[3:6] = applyRotEul(cons[3:6],-ang_conj/n_conj,ax_normal1)
+        cons[9:12] = applyRotEul(cons[9:12],-ang_conj/n_conj,ax_normal2)
         yield cons
 
-def ang_between(vec1,vec2):
+def angBetween(vec1,vec2):
     return arccos(dot(vec1,vec2)/norm(vec1)/norm(vec2))
    
 def normal_line(xyz):
@@ -105,8 +105,8 @@ def jumprope2(thread,ang_rot=None,target_thread=None,ang_conj=.5,n_rot=10,n_conj
     ax_rot = e0-s0
     
             
-    ang_conj1 = ang_conj - ang_between(s1-s0,ax_rot)
-    ang_conj2 = ang_conj - ang_between(e0-e1,ax_rot)
+    ang_conj1 = ang_conj - angBetween(s1-s0,ax_rot)
+    ang_conj2 = ang_conj - angBetween(e0-e1,ax_rot)
     # will fail if angle is greater than pi/2
     
     #ax_norm1 = cross(s1-s0,ax_rot)
@@ -118,8 +118,8 @@ def jumprope2(thread,ang_rot=None,target_thread=None,ang_conj=.5,n_rot=10,n_conj
     cons = thread.getConstraints()
     
     for t in xrange(n_conj):
-        cons[3:6] = apply_rot_eul(cons[3:6],ang_conj1/n_conj,ax_norm1)
-        cons[9:12] = apply_rot_eul(cons[9:12],ang_conj2/n_conj,ax_norm2)
+        cons[3:6] = applyRotEul(cons[3:6],ang_conj1/n_conj,ax_norm1)
+        cons[9:12] = applyRotEul(cons[9:12],ang_conj2/n_conj,ax_norm2)
         yield cons
     
     dists = [np.inf]
@@ -128,8 +128,8 @@ def jumprope2(thread,ang_rot=None,target_thread=None,ang_conj=.5,n_rot=10,n_conj
     print ang_rot
     for t in xrange(2*n_rot):
         print t
-        cons[3:6] = apply_rot_eul(cons[3:6],ang_rot/n_rot,ax_rot)
-        cons[9:12] = apply_rot_eul(cons[9:12],ang_rot/n_rot,ax_rot)
+        cons[3:6] = applyRotEul(cons[3:6],ang_rot/n_rot,ax_rot)
+        cons[9:12] = applyRotEul(cons[9:12],ang_rot/n_rot,ax_rot)
         yield cons
         dist = norm(thread.getXYZ()-xyz_targ)
         dists.append(dist)
@@ -140,16 +140,16 @@ def jumprope2(thread,ang_rot=None,target_thread=None,ang_conj=.5,n_rot=10,n_conj
         
 
     #xyz = thread.getXYZ()        
-    #ang_conj1 = ang_between(xyz[:,1]-xyz[:,0],s1-s0)
-    #ang_conj2 = ang_between(xyz[:,1]-xyz[:,0],s1-s0)
+    #ang_conj1 = angBetween(xyz[:,1]-xyz[:,0],s1-s0)
+    #ang_conj2 = angBetween(xyz[:,1]-xyz[:,0],s1-s0)
     
     #ax_norm1 = cross(xyz[:,1]-xyz[:,0],s1-s0)
     #ax_norm2 = cross(e0-e1,xyz[:,-1]-xyz[:,-2])
 
         
     #for t in xrange(n_conj):
-        #cons[3:6] = apply_rot_eul(cons[3:6],ang_conj1/n_conj,-ax_norm1)
-        #cons[9:12] = apply_rot_eul(cons[9:12],ang_conj2/n_conj,ax_norm2)
+        #cons[3:6] = applyRotEul(cons[3:6],ang_conj1/n_conj,-ax_norm1)
+        #cons[9:12] = applyRotEul(cons[9:12],ang_conj2/n_conj,ax_norm2)
         #yield cons
         
 
@@ -157,12 +157,12 @@ def jumprope2(thread,ang_rot=None,target_thread=None,ang_conj=.5,n_rot=10,n_conj
 def opt_rot(xyz1,xyz2,n_rot=10):
     ax_rot = xyz1[:,-1] - xyz1[:,0]
     angs_coarse = linspace(0,2*pi,n_rot)
-    dists_coarse = [norm(apply_rot_vec(xyz1,ang,ax_rot,xyz1[:,0])-xyz2)
+    dists_coarse = [norm(applyRotVec(xyz1,ang,ax_rot,xyz1[:,0])-xyz2)
              for ang in angs_coarse]    
     i_best1,i_best2 = np.argsort(dists_coarse)[:2]
     
     angs_fine = np.linspace(angs_coarse[i_best1],angs_coarse[i_best2],n_rot)
-    dists_fine = [norm(apply_rot_vec(xyz1,ang,ax_rot,xyz1[:,0])-xyz2)
+    dists_fine = [norm(applyRotVec(xyz1,ang,ax_rot,xyz1[:,0])-xyz2)
              for ang in angs_fine]
 
     return angs_fine[np.argmin(dists_fine)]
@@ -170,12 +170,12 @@ def opt_rot(xyz1,xyz2,n_rot=10):
 #def opt_rot2(xyz1,xyz2,n_rot=10):
     #ax_rot = xyz1[:,-1] - xyz1[:,0]
     #angs_coarse = linspace(0,2*pi,n_rot)
-    #dists_coarse = [norm(apply_rot_vec(xyz1,ang,ax_rot,xyz1[:,0])-xyz2)
+    #dists_coarse = [norm(applyRotVec(xyz1,ang,ax_rot,xyz1[:,0])-xyz2)
              #for ang in angs_coarse]    
     #i_best1,i_best2 = np.argsort(dists_coarse)[:2]
     
     #angs_fine = np.linspace(angs_coarse[i_best1],angs_coarse[i_best2],n_rot)
-    #dists_fine = [norm(apply_rot_vec(xyz1,ang,ax_rot,xyz1[:,0])-xyz2)
+    #dists_fine = [norm(applyRotVec(xyz1,ang,ax_rot,xyz1[:,0])-xyz2)
              #for ang in angs_fine]
 
     #return angs_fine[np.argmin(dists_fine)]

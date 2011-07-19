@@ -2,7 +2,7 @@ from doo import *
 from doo.doo import Thread
 from sqp import frPath,calcStates,evalDiff
 from numpy.random import randn
-from utils import upsample2D
+from utils import upsample2D,colorSeq
 
 T = 20
 
@@ -24,19 +24,21 @@ print "moving it along path 1->2->goal"
 cons_t = upsample2D(np.array([cons_1,cons_2,cons_end]),T)
 import mayavi.mlab as mlab
 
+colors = colorSeq(100)
 
 xyzs_fwd = []
 for cons in cons_t[1:]:
     thread.setConstraints(cons)
     x,y,z = thread.getXYZ()
-    mlab.plot3d(x,y,z,tube_radius=.1,color=(1,0,0))
+    mlab.plot3d(x,y,z,tube_radius=.1,color=colors.next())
     
+for _ in xrange(20): color = colors.next()
     
 xyzs_back = []
 for cons in cons_t[-1::-1]:
     thread.setConstraints(cons)
     x,y,z = thread.getXYZ()
-    mlab.plot3d(x,y,z,tube_radius=.1,color=(0,0,1))
+    mlab.plot3d(x,y,z,tube_radius=.1,color=colors.next())
 
 mlab.show()
     

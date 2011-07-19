@@ -28,3 +28,6 @@ MotionPlanning/test_linearization
 MotionPlanning/test_planner
 MotionPlanning/vis_onetraj
 MotionPlanning/visualize_trajs
+john/doo/doo.cpp
+john/doo/eigen_src/
+

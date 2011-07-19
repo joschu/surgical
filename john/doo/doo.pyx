@@ -1,9 +1,12 @@
 #from doo import *
 from settings import *
 import numpy as np
+from numpy import dot
+from numpy.linalg import norm
 from libcpp.vector cimport vector
 from comm import readMats,writeMats
 from nibabel.eulerangles import euler2mat, mat2euler
+
 
 cdef extern from "thread_discrete.h":
     cdef cppclass ThreadPiece:
@@ -94,8 +97,12 @@ cdef class Thread:
         bro = Thread()
         bro.thisptr.restore_thread_pieces(thread_backup_pieces)
         return bro
-
-        
+    def applyMotion(self,move1,rot1,move2,rot2):
+        xyz,mat1,mat2 = self.getData()    
+        writeMats(xyz[:,0]+move1,dot(rot1,mat1),xyz[:,-1]+move2,dot(rot2,mat2))
+        self.loadConstraints()        
+        self.minimizeEnergy()
+  
 cdef class GLThread:
     cdef c_GLThread *thisptr
     cdef c_Thread *threadptr

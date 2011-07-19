@@ -7,26 +7,15 @@ from numpy.linalg import norm
 from itertools import izip_longest,chain
 from mp.utils import trunc
 from doo import USCALE
-
-def apply_rot_eul(eul,ang,ax):
-    "compose a rotation of ang around ax with rotation given by euler angles eul"
-    return mat2euler(dot(angle_axis2mat(ang,ax),euler2mat(*eul)))
-
-def apply_rot_vec(x,ang,ax,origin):
-    "rotate a vector x by ang around axis defined by ray origin+ax"
-    return dot(angle_axis2mat(ang,ax),x-origin[:,None])+origin[:,None]
-
-def ang_between(vec1,vec2):
-    "angle between vectors, in range [0,pi]"
-    return arccos(dot(vec1,vec2)/norm(vec1)/norm(vec2))
+from geom import *
 
 def jumprope(thread,theta,dtheta):
     "rotate ends around axis joining them"
     for _ in xrange(int(ceil(abs(theta/dtheta)))):
         cons = thread.getConstraints()
         ax_rot = cons[6:9]-cons[0:3]
-        cons[3:6] = apply_rot_eul(cons[3:6],dtheta,ax_rot)
-        cons[9:12] = apply_rot_eul(cons[9:12],dtheta,ax_rot)
+        cons[3:6] = applyRotEul(cons[3:6],dtheta,ax_rot)
+        cons[9:12] = applyRotEul(cons[9:12],dtheta,ax_rot)
         yield cons
         
 def cl_rotate(thread,xyz_targ):
@@ -69,7 +58,7 @@ def twist_first(thread,theta,dtheta):
         ax_rot = xyz[:,1] - xyz[:,0]
         cons = thread.getConstraints()
         for _ in xrange(int(ceil(abs(theta/dtheta)))):
-            cons[3:6] = apply_rot_eul(cons[3:6],dtheta,ax_rot)
+            cons[3:6] = applyRotEul(cons[3:6],dtheta,ax_rot)
             yield cons
         
 
@@ -88,9 +77,9 @@ def bend_first(thread,theta,dtheta):
         ax_rot = cross(ax_main,xyz[:,2]-xyz[:,0]) 
         # .9,.1 is to make sure it's not zero
         cons = thread.getConstraints()
-        if ang_between(ax_main,ax_tan) < theta:
-            print "first",ang_between(ax_main,ax_tan),ax_rot            
-            cons[3:6] = apply_rot_eul(cons[3:6],dtheta,ax_rot)
+        if angBetween(ax_main,ax_tan) < theta:
+            print "first",angBetween(ax_main,ax_tan),ax_rot            
+            cons[3:6] = applyRotEul(cons[3:6],dtheta,ax_rot)
             yield cons
         else:
             break
@@ -105,9 +94,9 @@ def bend_last(thread,theta,dtheta):
         ax_tan = xyz[:,-2] - xyz[:,-1]
         ax_rot = cross(ax_main,xyz[:,-3]-xyz[:,-1]) # make sure it's not zero
         cons = thread.getConstraints()
-        if ang_between(ax_main,ax_tan) < theta:
-            print "last",ang_between(ax_main,ax_tan),ax_rot
-            cons[9:12] = apply_rot_eul(cons[9:12],dtheta,ax_rot)
+        if angBetween(ax_main,ax_tan) < theta:
+            print "last",angBetween(ax_main,ax_tan),ax_rot
+            cons[9:12] = applyRotEul(cons[9:12],dtheta,ax_rot)
             yield cons
         else:
             break

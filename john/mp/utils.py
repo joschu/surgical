@@ -1,3 +1,4 @@
+from __future__ import division
 import numpy as np
 from numpy.linalg import norm
 from scipy.interpolate import splrep,splev
@@ -14,15 +15,16 @@ color_seqs = dict(
 def cprint(string,color="red"):
     print(color_seqs[color]+string+color_seqs["end"])
 
-def upsample1D(y,T):
+def upsample1D(y,T,k=None):
     x = np.linspace(0,1,y.size)
+    if k is None: k=min(len(x)-1,3)
     xnew = np.linspace(0,1,T)
-    tck = splrep(x,y,k=min(len(x)-1,3))
+    tck = splrep(x,y,k=k)
     return splev(xnew,tck)
 
-def upsample2D(y,T):
+def upsample2D(y,T,k=None):
     "upsample y along axis 0"
-    return np.array([upsample1D(ycol,T) for ycol in y.T]).T
+    return np.array([upsample1D(ycol,T,k) for ycol in y.T]).T
 
 def ndinterp(x,xp,yp):
     """n-dimensional interpolation
@@ -41,7 +43,33 @@ def colorSeq(N):
     for col in cycle(colors): yield tuple(col)
 
 def trunc(x,p):
-    x1 = x.copy()
-    toobig = abs(x1) > p
-    x1[toobig] = (p*np.sign(x1))[toobig]
-    return x1
+    return np.clip(x,-p,p)
+    #x1 = np.copy(x)
+    #if x1.ndim == 0:
+        #return x1 if abs(x1) < p else p*np.sign(x1)
+    #else:
+        #toobig = abs(x1) > p
+        #x1[toobig] = (p*np.sign(x1))[toobig]
+        #return x1
+
+def truncNorm(xs,p):
+    xs = np.asarray(xs)
+    if xs.ndim == 1:
+        nx = norm(xs)+ TINY
+        return xs if nx < p else xs*(p/nx)
+    else:
+        norms = np.sqrt((xs**2).sum(axis=1))
+        newnorms = np.clip(norms,0,p)
+        return normr(xs) * newnorms[:,None]
+    
+TINY = 1e-5
+
+def normr(x):
+    if x.ndim == 1:
+        return x / (norm(x)+TINY)
+    elif x.ndim == 2:
+        norms = (x**2).sum(axis=1)
+        return x / np.sqrt(norms)[:,None]
+    
+def almostEq(x,y,tol=1e-3):
+    return norm(x-y) / (norm(x)+norm(y)+TINY) < tol
